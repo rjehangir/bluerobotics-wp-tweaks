@@ -152,10 +152,21 @@ function rusty_change_data($data, $product, $rule) {
 */
 function round_prices_on_store($trim) {
 	if ( is_product_category() || is_shop() ) {
-		return true;
+			return true;
 	}
 }
-add_filter( 'woocommerce_price_trim_zeros', 'round_prices_on_store', 10, 1);
+//add_filter( 'woocommerce_price_trim_zeros', 'round_prices_on_store', 10, 1);
+
+/**
+ * Hide categories from WordPress category widget
+ *
+ * @since 1.0.0
+*/
+add_filter( 'woocommerce_product_categories_widget_args', 'woo_product_cat_widget_args' );
+function woo_product_cat_widget_args( $cat_args ) {
+    $cat_args['exclude'] = array('406','431','113','20','428');
+    return $cat_args;
+}
 
 /**
  * Function to call actions that must be done after init, such as removing filters.

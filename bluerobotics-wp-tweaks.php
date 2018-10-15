@@ -169,6 +169,21 @@ function woo_product_cat_widget_args( $cat_args ) {
 }
 
 /**
+ * Change some text strings
+ *
+ * @since 1.0.0
+*/
+function change_text_strings( $translated_text, $text, $domain ) {
+    switch ( $translated_text ) {
+        case '(can be backordered)':
+            $translated_text = __( '', 'woocommerce' );
+            break;
+	}
+    return $translated_text;
+}
+add_filter( 'gettext', 'change_text_strings', 10, 3 );
+
+/**
  * Function to call actions that must be done after init, such as removing filters.
  *
  * @since 1.0.0

@@ -146,6 +146,22 @@ function rusty_change_data($data, $product, $rule) {
 }*/
 
 /**
+ * Turn off Table Output Caching for all tables by default.
+ *
+ * @since 1.0.0
+ *
+ * @param array $render_options Render Options.
+ * @param array $table          Table.
+ *
+ * @return array Modified Render Options.
+ */
+function tablepress_turn_off_output_caching( $render_options, $table ) {
+	$render_options['cache_table_output'] = false;
+	return $render_options;
+}
+add_filter( 'tablepress_table_render_options', 'tablepress_turn_off_output_caching', 10, 2 );
+
+/**
  * Trim zeros in price decimals
  *
  * @since 1.0.0

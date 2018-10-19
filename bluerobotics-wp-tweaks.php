@@ -185,6 +185,18 @@ function woo_product_cat_widget_args( $cat_args ) {
 }
 
 /**
+ * Format order number with invoice number settings
+ */
+add_filter( 'wpo_wcpdf_raw_document_number', 'wpo_wcpdf_raw_document_number', 10, 4 );
+function wpo_wcpdf_raw_document_number( $number, $settings, $document, $order ) {
+    if ( $document->get_type() == 'invoice' ) {
+        $number = $order->get_order_number();
+    }
+ 
+    return $number;
+}
+
+/**
  * Change some text strings
  *
  * @since 1.0.0

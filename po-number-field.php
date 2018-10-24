@@ -19,9 +19,8 @@ function br_po_number_field( $checkout ) {
     woocommerce_form_field( 'po_number', array(
         'type'          => 'text',
         'class'         => array('br-po-field-class form-row-wide'),
-        'label'         => __('Purchase Order (PO) Number'),
+        'label'         => __('Purchase Order Number'),
         'placeholder'   => __(''),
-        'validate'      => array(),
         ), $checkout->get_value( 'po_number' ));
 
     echo '</div>';

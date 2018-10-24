@@ -47,7 +47,7 @@ function br_po_checkout_field_display_admin_order_meta( $order ){
 	<div class="address">
 		<p<?php if( !$br_po_number ) echo ' class=""' ?>>
 			<strong>Customer PO Number:</strong>
-			<?php echo ( $br_po_number ) ? $br_po_number : 'None.' ?>
+			<?php echo ( $br_po_number ) ? $br_po_number : 'None' ?>
 		</p>
 	</div>
 	<div class="edit_address"><?php

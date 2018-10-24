@@ -19,6 +19,11 @@
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 /**
+ * External files for organization.
+ */
+include('po-number-field.php');
+
+/**
  * Display number sold for launch
  *
  * @since 1.0.0

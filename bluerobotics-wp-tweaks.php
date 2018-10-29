@@ -5,7 +5,7 @@
  * Description: Small and miscellaneous tweaks to Wordpress and WooCommerce for the bluerobotics.com website.
  * Author: Rustom Jehangir
  * Author URI: http://rstm.io
- * Version: 1.0.0
+ * Version: 1.0.1
  *
  * Copyright: (c) 2018 Rustom Jehangir
  *

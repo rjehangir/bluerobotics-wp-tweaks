@@ -60,13 +60,16 @@ function br_po_checkout_field_display_admin_order_meta( $order ){
 		) );
         ?></div><?php
 }
- 
+
 /**
  * Save the field.
  */
-add_action( 'woocommerce_process_shop_order_meta', 'br_po_process_shop_order_meta' );
-function br_po_process_shop_order_meta( $ord_id ){
-	update_post_meta( $ord_id, 'br_po_input', wc_clean( $_POST[ '_br_po_number' ] ) );
+add_action( 'woocommerce_process_shop_order_meta', 'br_po_process_shop_order_meta', 20, 1 );
+function br_po_process_shop_order_meta( $ord_id ) {
+	if ( !empty( $_POST['br_po_input'] ) ) {
+		update_post_meta( $ord_id, '_br_po_number', sanitize_text_field( $_POST[ 'br_po_input' ] ) );
+	}
 }
+
 
 ?>

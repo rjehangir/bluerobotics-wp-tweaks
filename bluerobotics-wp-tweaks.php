@@ -201,6 +201,22 @@ function wpo_wcpdf_raw_document_number( $number, $settings, $document, $order ) 
 }
 
 /**
+ * Add distributor information box when logged in.
+ */
+add_action( 'woocommerce_archive_description', 'distributor_info_box', 15 );
+function distributor_info_box() {
+	if ( is_distributor() || current_user_can('administrator') ) {
+		$id=24635;
+		$post = get_page($id);
+		$content = apply_filters('the_content', $post->post_content);
+
+		echo '<div class="well well-sm distributor-info-well">';
+		echo $content;
+		echo '</div>';
+	}
+}
+
+/**
  * Change some text strings
  *
  * @since 1.0.0

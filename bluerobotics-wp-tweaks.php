@@ -22,6 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
  * External files for organization.
  */
 include('po-number-field.php');
+include('br-pricing-tab.php');
 
 /**
  * Display number sold for launch
@@ -125,10 +126,8 @@ function rusty_test_display($isIt, $data, $product, $is_variable) {
 
 add_filter('rp_wcdpd_volume_pricing_table_title','rusty_change_table_title',10,4);
 function rusty_change_table_title($label, $product, $data, $is_variable) {
-	if ( is_distributor() ) {
-		return "Distributor Discount";
-	}
-	return RP_WCDPD_Settings::get('promo_volume_pricing_table_title');
+	// Return the "public note" from the quantity discount plugin
+	return $data[0]['rule']['public_note'];
 }
 
 // Display the discounts as a percentage for composite products only

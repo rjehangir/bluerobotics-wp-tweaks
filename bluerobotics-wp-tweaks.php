@@ -206,7 +206,7 @@ function wpo_wcpdf_raw_document_number( $number, $settings, $document, $order ) 
 add_action( 'woocommerce_archive_description', 'distributor_info_box', 15 );
 function distributor_info_box() {
 	if ( is_distributor() || current_user_can('administrator') ) {
-		$id=24635;
+		$id=27225;
 		$post = get_page($id);
 		$content = apply_filters('the_content', $post->post_content);
 

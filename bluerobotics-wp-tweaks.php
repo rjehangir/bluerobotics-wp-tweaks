@@ -217,6 +217,33 @@ function distributor_info_box() {
 }
 
 /**
+ * Add an "other" information column to the product view.
+ */
+add_filter( 'manage_edit-product_columns', 'br_product_info_add_column' );
+function br_product_info_add_column( $columns ) {
+    $columns['other'] = 'Other';
+    return $columns;
+}
+
+/**
+ * Populate the "other" information column with helpful data.
+ */
+add_action( 'manage_product_posts_custom_column', 'br_product_info_column_contents' );
+function br_product_info_column_contents( $column ) {
+   
+    global $post;
+ 
+    if ( 'other' === $column ) {
+ 		echo get_post_meta( $post->ID, 'total_sales', true ).' sold total<br />';
+ 		if ( get_post_meta( $post->ID, '_br_pricing_distributor_pricing', true ) != '' ) {
+ 			echo '<span class="dashicons dashicons-yes"></span>Distributor Price. ';
+ 		} else {
+ 			//echo '<span class="dashicons dashicons-no"></span>Distributor Price. ';
+ 		}
+    }
+}
+
+/**
  * Change some text strings
  *
  * @since 1.0.0

@@ -235,8 +235,12 @@ function br_product_info_column_contents( $column ) {
  
     if ( 'other' === $column ) {
  		echo get_post_meta( $post->ID, 'total_sales', true ).' sold total<br />';
- 		if ( get_post_meta( $post->ID, '_br_pricing_distributor_pricing', true ) != '' ) {
- 			echo '<span class="dashicons dashicons-yes"></span>Distributor Price. ';
+ 		if ( get_post_meta( $post->ID, '_br_pricing_distributor_pricing', true ) == '' ) {
+ 			echo '<span class="dashicons dashicons-no"></span>Distributor Price Not Set';
+ 		} elseif ( get_post_meta( $post->ID, '_br_pricing_distributor_pricing', true ) == 'other' ) {
+ 			echo '<span class="dashicons dashicons-admin-settings"></span>Manual Distributor Pricing';
+ 		} elseif ( get_post_meta( $post->ID, '_br_pricing_distributor_pricing', true ) == 'no_discount' ) {
+ 			echo '<strong>0%</strong> Distributor Discount';
  		} else {
  			//echo '<span class="dashicons dashicons-no"></span>Distributor Price. ';
  		}

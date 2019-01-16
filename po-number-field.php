@@ -42,7 +42,7 @@ function br_po_checkout_field_update_order_meta( $order_id ) {
  */
 add_action( 'woocommerce_admin_order_data_after_billing_address', 'br_po_checkout_field_display_admin_order_meta' );	 	
 function br_po_checkout_field_display_admin_order_meta( $order ){	 	 
-	$br_po_number = get_post_meta( $order->get_order_number(), '_br_po_number', true );
+	$br_po_number = get_post_meta( $order->id, '_br_po_number', true );
 	?>
 	<div class="address">
 		<p<?php if( !$br_po_number ) echo ' class=""' ?>>

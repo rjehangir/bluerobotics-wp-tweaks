@@ -14,11 +14,11 @@ add_action( 'woocommerce_checkout_update_order_meta', 'br_payment_field_set_on_c
 
 function br_payment_field_set_on_checkout( $order_id ) {
 	if ( $_POST['payment_method'] == 'bacs' ) {
-    	update_post_meta( $order_id, '_br_payment_terms', 'unknown' );
+    	update_post_meta( $order_id, '_br_payment_terms', 'Unknown' );
     } else if ( $_POST['payment_method'] == 'gpls-rfq' ) {
-    	update_post_meta( $order_id, '_br_payment_terms', 'unknown' );
+    	update_post_meta( $order_id, '_br_payment_terms', 'Unknown' );
     } else {
-    	update_post_meta( $order_id, '_br_payment_terms', 'immediate' );
+    	update_post_meta( $order_id, '_br_payment_terms', 'Prepaid / Immediate Payment' );
     }
 }
 
@@ -29,13 +29,14 @@ add_action( 'woocommerce_admin_order_data_after_billing_address', 'br_payment_te
 function br_payment_terms_field_display_admin_order_meta( $order ){	 	
 
 	$options = array(
-				'unknown' => 'Unknown',
-				'immediate' => 'Prepaid / Immediate Payment',
-				'net15' => 'Net 15',
-				'net30' => 'Net 30',
-				'net45' => 'Net 45',
-				'net60' => 'Net 60',
-				'net90' => 'Net 90');
+				'Unknown' => 'Unknown',
+				'Prepaid / Immediate Payment' => 'Prepaid / Immediate Payment',
+				'Prepaid on Credit Card' => 'Prepaid on Credit Card',
+				'Net 15' => 'Net 15',
+				'Net 30' => 'Net 30',
+				'Net 45' => 'Net 45',
+				'Net 60' => 'Net 60',
+				'Net 90' => 'Net 90');
 
 	$br_payment_terms = get_post_meta( $order->id, '_br_payment_terms', true );
 	?>

@@ -5,7 +5,7 @@
  * Description: Small and miscellaneous tweaks to Wordpress and WooCommerce for the bluerobotics.com website.
  * Author: Rustom Jehangir
  * Author URI: http://rstm.io
- * Version: 1.1.1
+ * Version: 1.1.2
  *
  * Copyright: (c) 2019 Rustom Jehangir
  *
@@ -215,6 +215,41 @@ function distributor_info_box() {
 		echo $content;
 		echo '</div>';
 	}
+}
+
+/**
+ * Add link to distributor portal from the account page when logged in.
+ */
+add_filter ( 'woocommerce_account_menu_items', 'distributor_portal_myaccount_link' );
+function distributor_portal_myaccount_link( $menu_links ){
+ 	if ( is_distributor() || current_user_can('administrator') ) {
+		$new = array( 'distributor-portal-endpoint' => 'Distributor Portal' );
+	 
+		// or in case you need 2 links
+		// $new = array( 'link1' => 'Link 1', 'link2' => 'Link 2' );
+	 
+		// array_slice() is good when you want to add an element between the other ones
+		$menu_links = array_slice( $menu_links, 0, 1, true ) 
+		+ $new 
+		+ array_slice( $menu_links, 1, NULL, true );
+	 
+	 
+		return $menu_links;
+ 	}
+ 	return $menu_links;
+}
+ 
+add_filter( 'woocommerce_get_endpoint_url', 'distributor_myaccount_portal_hook_endpoint', 10, 4 );
+function distributor_myaccount_portal_hook_endpoint( $url, $endpoint, $value, $permalink ){
+ 
+	if( $endpoint === 'distributor-portal-endpoint' ) {
+ 
+		// ok, here is the place for your custom URL, it could be external
+		$url = site_url().'/distributor-portal/';
+ 
+	}
+	return $url;
+ 
 }
 
 /**

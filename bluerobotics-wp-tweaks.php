@@ -308,6 +308,19 @@ function br_check_cart_has_backorder_product() {
 }
 
 /**
+ * Set checkout address field to 35 characters max length for shipstation.
+ */
+add_filter( 'woocommerce_checkout_fields' , 'br_checkout_address_length' );
+
+function br_checkout_address_length( $fields ) { 
+	$fields['billing']['billing_address_1']['maxlength'] = 35; 
+	$fields['billing']['billing_address_2']['maxlength'] = 35; 
+	$fields['shipping']['shipping_address_1']['maxlength'] = 35; 
+	$fields['shipping']['shipping_address_2']['maxlength'] = 35; 
+	return $fields;
+}
+
+/**
  * Change some text strings
  *
  * @since 1.0.0

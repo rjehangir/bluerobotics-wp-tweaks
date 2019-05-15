@@ -321,6 +321,42 @@ function br_checkout_address_length( $fields ) {
 }
 
 /**
+ * Set shipping city to Singapore if the country is Singapore.
+ */
+add_action( 'wp_footer', 'br_singapore_shipping_fix' );
+function br_singapore_shipping_fix() {
+    // Only checkout page
+    if( is_checkout() && ! is_wc_endpoint_url() ):
+    ?>
+    <script type="text/javascript">
+        jQuery(function($){
+            // Utility function to convert billing or shipping city and postcode checkout fields based on state
+            function checkForSingapore() {
+                if ( document.getElementById('shipping_country').value == 'SG' ) {
+                	document.getElementById('shipping_city').value = 'Singapore';
+                }
+                if ( document.getElementById('billing_country').value == 'SG' ) {
+                	document.getElementById('billing_city').value = 'Singapore';
+                }
+            }
+
+            // 1. Once DOM is loaded
+            checkForSingapore();
+
+            // 2. On "state" field change event
+            $('shipping_country').on('change', function() {
+                checkForSingapore();
+            });
+            $('billing_country').on('change', function() {
+                checkForSingapore();
+            });
+        });
+    </script>
+    <?php
+    endif;
+};
+
+/**
  * Change some text strings
  *
  * @since 1.0.0

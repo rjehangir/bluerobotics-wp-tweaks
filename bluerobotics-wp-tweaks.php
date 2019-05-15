@@ -284,6 +284,30 @@ function br_product_info_column_contents( $column ) {
 }
 
 /**
+ * Notify customers of backordered items in the cart.
+ */
+add_action( 'woocommerce_before_checkout_form', 'br_checkout_add_cart_backorder_notice' );
+
+function br_checkout_add_cart_backorder_notice() {
+    $message = 'You have a backordered product in your cart! Your order may not ship immediately. Return to the <a href="/cart/">cart</a> to remove any backordered items if necessary.';
+
+    if ( br_check_cart_has_backorder_product() ) 
+        wc_add_notice( $message, 'error' );
+
+}
+
+function br_check_cart_has_backorder_product() {
+    foreach( WC()->cart->get_cart() as $cart_item_key => $values ) {
+        $cart_product =  wc_get_product( $values['data']->get_id() );
+
+        if( $cart_product->is_on_backorder() )
+            return true;
+    }
+
+    return false;
+}
+
+/**
  * Change some text strings
  *
  * @since 1.0.0

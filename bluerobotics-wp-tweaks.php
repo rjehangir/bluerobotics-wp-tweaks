@@ -5,7 +5,7 @@
  * Description: Small and miscellaneous tweaks to Wordpress and WooCommerce for the bluerobotics.com website.
  * Author: Rustom Jehangir
  * Author URI: http://rstm.io
- * Version: 1.1.2
+ * Version: 1.1.4
  *
  * Copyright: (c) 2019 Rustom Jehangir
  *
@@ -24,6 +24,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 include('po-number-field.php');
 include('br-pricing-tab.php');
 include('payment-terms-field.php');
+include('checkout-survey-fields.php');
 
 /**
  * Display number sold for launch

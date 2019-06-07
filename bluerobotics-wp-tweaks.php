@@ -5,7 +5,7 @@
  * Description: Small and miscellaneous tweaks to Wordpress and WooCommerce for the bluerobotics.com website.
  * Author: Rustom Jehangir
  * Author URI: http://rstm.io
- * Version: 1.1.4
+ * Version: 1.1.5
  *
  * Copyright: (c) 2019 Rustom Jehangir
  *
@@ -25,6 +25,7 @@ include('po-number-field.php');
 include('br-pricing-tab.php');
 include('payment-terms-field.php');
 include('checkout-survey-fields.php');
+include('very-short-descriptions.php');
 
 /**
  * Display number sold for launch
@@ -89,7 +90,7 @@ function wpo_wcpdf_remove_downloadable_items ( $items_data, $order, $document_ty
  *
  * @since 1.0.0
 */
-add_filter( 'woocommerce_order_button_text', 'woo_custom_order_button_text' ); 
+//add_filter( 'woocommerce_order_button_text', 'woo_custom_order_button_text' ); 
 function woo_custom_order_button_text() {
     return __( 'Place order (please wait for order to be placed)', 'woocommerce' ); 
 }
@@ -271,16 +272,19 @@ function br_product_info_column_contents( $column ) {
     global $post;
  
     if ( 'other' === $column ) {
- 		echo get_post_meta( $post->ID, 'total_sales', true ).' sold total<br />';
+ 		echo get_post_meta( $post->ID, 'total_sales', true ).' sold total';
  		if ( get_post_meta( $post->ID, '_br_pricing_distributor_pricing', true ) == '' ) {
- 			echo '<span class="dashicons dashicons-no"></span>Distributor Price Not Set';
+ 			echo '<br /><span class="dashicons dashicons-no"></span>Distributor Price Not Set';
  		} elseif ( get_post_meta( $post->ID, '_br_pricing_distributor_pricing', true ) == 'other' ) {
- 			echo '<span class="dashicons dashicons-admin-settings"></span>Manual Distributor Pricing';
+ 			echo '<br /><span class="dashicons dashicons-admin-settings"></span>Manual Distributor Pricing';
  		} elseif ( get_post_meta( $post->ID, '_br_pricing_distributor_pricing', true ) == 'no_discount' ) {
- 			echo '<strong>0%</strong> Distributor Discount';
+ 			echo '<br /><strong>0%</strong> Distributor Discount';
  		} else {
  			//echo '<span class="dashicons dashicons-no"></span>Distributor Price. ';
  		}
+        if ( get_post_meta( $post->ID, '_br_very_short_description', true ) == '' ) {
+            echo '<br /><span class="dashicons dashicons-no"></span>Very short description not set';
+        }
     }
 }
 

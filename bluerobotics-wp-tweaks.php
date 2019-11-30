@@ -22,7 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
  * External files for organization.
  */
 include('po-number-field.php');
-include('br-pricing-tab.php');
+//include('br-pricing-tab.php');
 include('payment-terms-field.php');
 include('checkout-survey-fields.php');
 include('very-short-descriptions.php');

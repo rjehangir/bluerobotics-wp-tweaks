@@ -22,7 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
  * External files for organization.
  */
 include('po-number-field.php');
-//include('br-pricing-tab.php');
+include('stock-status.php');
 include('payment-terms-field.php');
 include('checkout-survey-fields.php');
 include('very-short-descriptions.php');
@@ -113,44 +113,14 @@ function is_distributor() {
 	return current_user_can('distributor');
 }
 
-/*add_filter( 'rp_wcdpd_volume_pricing_table_display', 'rusty_test_display', 10, 4 );
-function rusty_test_display($isIt, $data, $product, $is_variable) {
-	if ($product->get_type() == 'composite') {
-		if ( is_distributor() ) {
-			echo '<p style="font-weight:600">(Distributor pricing appears in cart.)</p>';
-		} {
-			//echo '<p style="font-weight:600">(Quantity pricing appears in cart.)</p>';
-		}
-		return false;
-	} else {
-		return true;
-	}
-}*/
-
-add_filter('rp_wcdpd_volume_pricing_table_title','rusty_change_table_title',10,4);
-function rusty_change_table_title($label, $product, $data, $is_variable) {
-	// Return the "public note" from the quantity discount plugin
-	return $data[0]['rule']['public_note'];
+/**
+ * Check for distributor role.
+ *
+ * @since 1.0.0
+*/
+function is_administrator() {
+    return current_user_can('administrator');
 }
-
-// Display the discounts as a percentage for composite products only
-add_filter('rp_wcdpd_volume_pricing_table_range_value','rusty_change_composite_value',10,5);
-function rusty_change_composite_value($display_value, $raw_value, $product, $rule, $quantity_range) {
-	if ($product->get_type() == 'composite') {
-		if ( $quantity_range['pricing_value'] == "0" ) {
-			return "-";
-		}
-		return $quantity_range['pricing_value'] . "%";
-		return "See cart";
-	}
-	return $display_value;
-}
-
-/*add_filter('rp_wcdpd_volume_pricing_table_data', 'rusty_change_data', 10, 3);
-function rusty_change_data($data, $product, $rule) {
-	$new_data = array(array("range_label"=>"1-2","range_price"=>"-","price_raw"=>"","from"=>0),array("range_label"=>"3+","range_price"=>"-10%","price_raw"=>"","from"=>0));
-	return $new_data;
-}*/
 
 /**
  * Turn off Table Output Caching for all tables by default.

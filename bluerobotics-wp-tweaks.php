@@ -26,6 +26,7 @@ include('stock-status.php');
 include('payment-terms-field.php');
 include('checkout-survey-fields.php');
 include('very-short-descriptions.php');
+include('warranty-tracking.php');
 
 /**
  * Display number sold for launch

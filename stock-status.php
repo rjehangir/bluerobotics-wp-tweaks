@@ -7,7 +7,7 @@
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly 
 
 /**
- * Set up the "in-stock date" field for regular products
+ * Set up the fields for regular products
  *
  * @since 1.0.0
 */
@@ -15,22 +15,25 @@ add_action('woocommerce_product_options_inventory_product_data', 'br_in_stock_da
 function br_in_stock_date_field() {
   global $product;
 
-  if ( !$product->is_type( 'variable' ) ) {
-    echo '<p class="form-field">
-      <label for="_wc_avatax_code">Expected in-stock date:</label><input type="text" name="br_in_stock_date_field" class="br_in_stock_date_field short" placeholder="" value="'.get_post_meta( get_the_ID(), '_br_in_stock_date_field', true ).'"></input></p>';
+  echo '<p class="form-field">
+    <label for="br_in_stock_date_field">Expected in-stock date</label><input type="text" name="br_in_stock_date_field" class="br_in_stock_date_field short" placeholder="" value="'.get_post_meta( get_the_ID(), '_br_in_stock_date_field', true ).'"></input></p>';
 
-    echo '<script>
-        jQuery(document).ready(function( $ ) {
-            $( ".br_in_stock_date_field").datepicker( {
-              minDate: 0, 
-            } );
-         } );
-    </script>';
-  }
+  echo '<script>
+      jQuery(document).ready(function( $ ) {
+          $( ".br_in_stock_date_field").datepicker( {
+            minDate: 0, 
+          } );
+       } );
+  </script>';
+
+  $show_stock_checked = get_post_meta( get_the_ID(), '_br_always_show_stock_field', true ) == 'on' ? 'checked' : '';
+
+  echo '<p class="form-field">
+    <label for="br_always_show_stock_field">Always show stock count</label><input type="checkbox" name="br_always_show_stock_field" class="br_always_show_stock_field" '.$show_stock_checked.'></input></p>';
 }
 
 /**
- * Save the in-stock date field for regular products
+ * Save the fields for regular products
  *
  * @since 1.0.0
 */
@@ -38,6 +41,9 @@ function br_save_in_stock_date_field($post_id) {
     // Save fields
     $in_stock_date_field = $_POST['br_in_stock_date_field'];
     update_post_meta($post_id, '_br_in_stock_date_field', esc_attr($in_stock_date_field));
+
+    $br_always_show_stock_field = $_POST['br_always_show_stock_field'];
+    update_post_meta($post_id, '_br_always_show_stock_field', esc_attr($br_always_show_stock_field));
 }
 add_action( 'woocommerce_process_product_meta', 'br_save_in_stock_date_field'  );
 
@@ -97,8 +103,16 @@ function br_custom_availability_text( $availability, $product ) {
     update_post_meta( $product->get_id(), '_br_in_stock_date_field', '' );
   }
 
-  // Show stock differently for distributors
-  if ( is_distributor() || is_administrator() ) {
+  // Show stock if "always show stock count" is selected
+  $product_id = $product->get_id();
+  $product = wc_get_product($product_id);
+  if ( $product->get_parent_id() > 0 ) {
+    $product_id = $product->get_parent_id();
+  }
+  $show_stock = get_post_meta( $product_id, '_br_always_show_stock_field', true ) == 'on';
+
+  // Show stock differently for distributors and if show_stock is true
+  if ( is_distributor() || is_administrator() || $show_stock ) {
     if ( $product->is_in_stock() && $product->managing_stock() ) {
       if ( !$product->is_on_backorder() ) {
         if ( !$is_measurement ) {

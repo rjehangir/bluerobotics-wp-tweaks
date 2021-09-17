@@ -28,6 +28,11 @@ include('checkout-survey-fields.php');
 include('very-short-descriptions.php');
 
 /**
+ * Remove auto <p> tag filter. It's so annoying.
+ */
+remove_filter ('the_content', 'wpautop');
+
+/**
  * Display number sold for launch
  *
  * @since 1.0.0
@@ -37,6 +42,71 @@ function brov2_func( $atts ) {
 	return sprintf( __( '%s', 'woocommerce' ), $units_sold );
 }
 add_shortcode( 'brov2_sold', 'brov2_func' );
+
+function dynamic_robots_javascript() {
+    ?>
+        <script>
+            if(document.location.origin=="https://bypass.bluerobotics.com"){
+               jQuery('meta[name="robots"]').remove()
+               jQuery('head').prepend('<meta name="robots" content="noindex,follow" />') ;
+            }
+        </script>
+    <?php
+}
+add_action('wp_head', 'dynamic_robots_javascript');
+
+/**
+ * External product card for third party products
+ *
+*/
+function external_product_card_func( $atts ) {
+    // normalize attribute keys, lowercase
+    $atts = array_change_key_case((array)$atts, CASE_LOWER);
+
+    $atts = shortcode_atts( array(
+        'title' => 'Product',
+        'desc' => '',
+        'price' => '',
+        'img' => '',
+        'link' => ''
+    ), $atts, $tag );
+
+    $title = $atts['title'];
+    $desc = $atts['desc'];
+    $img = $atts['img'];
+    $price = $atts['price'];
+    $link = $atts['link'];
+
+    $output = '';
+    $output .= '<div class="col-xs-12 col-sm-6 col-lg-3">                                    
+                <li class="para p_category product-content entry product type-product post-17135 status-publish first instock product_cat-cameras has-post-thumbnail taxable shipping-taxable purchasable product-type-simple">';
+    $output .= '<a href="'.$link.'" class="woocommerce-LoopProduct-link woocommerce-loop-product__link" target="_blank">';
+    $output .= '<img width="300" height="300" src="'.$img.'" class="attachment-woocommerce_thumbnail size-woocommerce_thumbnail" alt="" loading="lazy" sizes="(max-width: 34.9rem) calc(100vw - 2rem), (max-width: 53rem) calc(8 * (100vw / 12)), (min-width: 53rem) calc(6 * (100vw / 12)), 100vw">';
+    $output .= '<h5 class="">'.$title.'</h5>';
+    $output .= '<div class="page-description">'.$desc.'</div>';
+    $output .= '<span class="price text-blue"><span class="woocommerce-Price-amount amount">';
+    if ($price != '') {
+        $output .= '<bdi><span class="woocommerce-Price-currencySymbol">$</span>'.$price.'</bdi>';
+    }
+    $output .= '</span></span></a>';
+    $output .= '<a href="'.$link.'" data-quantity="1" class="btn btn-info button product_type_simple add_to_cart_button ajax_add_to_cart" rel="nofollow" target="_blank">Learn More</a></li></div>';
+    return $output;
+}
+add_shortcode( 'external_product', 'external_product_card_func' );
+
+function start_external_product_group_func( $atts ) {
+    $output = '';
+    $output .= '<div class="woocommerce"><ul class="products columns-4"><div class="row">';
+    return $output;
+}
+add_shortcode( 'start_external_product_group', 'start_external_product_group_func' );
+
+function end_external_product_group_func( $atts ) {
+    $output = '';
+    $output .= '</div></ul></div>';
+    return $output;
+}
+add_shortcode( 'end_external_product_group', 'end_external_product_group_func' );
 
 /**
  * Bundle composite product weights for shipping purposes
@@ -331,6 +401,76 @@ function br_singapore_shipping_fix() {
     endif;
 };
 
+/* Queue javascript for admin order page field validation. This currently enforces that there be a payment method set for any processing or completed orders. */
+function br_validate_payment_method_javascript() {
+    // Only add this script to admin order pages
+    if(!is_admin()) { return; }
+    if(get_post_type() != 'shop_order') { return; }
+
+    wp_enqueue_script('bluerobotics-wp-tweaks', plugins_url('bluerobotics-wp-tweaks/js/payment_method_validation.js'), array('jquery'),time());
+}
+add_action('admin_enqueue_scripts', 'br_validate_payment_method_javascript');
+
+/** Add a filter to filter orders by customer role on the admin orders page **/
+/** For details see here: https://jeroensormani.com/order-woocommerce-orders-per-user-role/ **/
+/** COMMENTED OUT DUE TO SUSPICION THAT IT WAS HIDING ORDERS **/
+/*add_action( 'restrict_manage_posts', 'shop_order_user_role_filter' );
+function shop_order_user_role_filter() {
+
+	global $typenow, $wp_query;
+
+	if ( in_array( $typenow, wc_get_order_types( 'order-meta-boxes' ) ) ) :
+		$user_role	= '';
+
+		// Get all user roles
+		$user_roles = array();
+		foreach ( get_editable_roles() as $key => $values ) :
+			$user_roles[ $key ] = $values['name'];
+		endforeach;
+
+		// Set a selected user role
+		if ( ! empty( $_GET['_user_role'] ) ) {
+			$user_role	= sanitize_text_field( $_GET['_user_role'] );
+		}
+
+		// Display drop down
+		?><select name='_user_role'>
+			<option value=''><?php _e( 'Select a user role', 'woocommerce' ); ?></option><?php
+			foreach ( $user_roles as $key => $value ) :
+				?><option <?php selected( $user_role, $key ); ?> value='<?php echo $key; ?>'><?php echo $value; ?></option><?php
+			endforeach;
+		?></select><?php
+	endif;
+
+
+}*/
+
+/** Add a filter to filter orders by customer role on the admin orders page **/
+/** COMMENTED OUT DUE TO SUSPICION THAT IT WAS HIDING ORDERS **/
+/*add_filter( 'pre_get_posts', 'shop_order_user_role_posts_where' );
+function shop_order_user_role_posts_where( $query ) {
+
+	if ( ! $query->is_main_query() || ! isset( $_GET['_user_role'] ) ) {
+		return;
+	}
+
+	$ids    = get_users( array( 'role' => sanitize_text_field( $_GET['_user_role'] ), 'fields' => 'ID' ) );
+	$ids    = array_map( 'absint', $ids );
+
+	$query->set( 'meta_query', array(
+		array(
+			'key' => '_customer_user',
+			'compare' => 'IN',
+			'value' => $ids,
+		)
+	) );
+
+	if ( empty( $ids ) ) {
+		$query->set( 'posts_per_page', 0 );
+	}
+
+}*/
+
 /**
  * Change some text strings
  *
@@ -356,4 +496,123 @@ function after_init() {
 }
 add_action( 'init', 'after_init', 11 );
 
-?>
+// trigger adding of meta in checkout page
+function bluerobotics_add_order_item_meta($item_id, $values) {
+	if (is_admin()) { return; }
+	$product_id = $values[ 'product_id' ];
+	$product = wc_get_product( $product_id );
+
+	$variation_id = $values[ 'variation_id' ];
+	$var_sku = get_post_meta( $variation_id, '_sku', true );
+	
+	if($variation_id > 0){
+		$key = 'Revision'; 
+		$value = $var_sku; 
+	}else{
+		$key = 'Revision';
+		$value = $product->get_sku();
+	}
+    wc_add_order_item_meta($item_id, $key, $value);
+}
+add_action('woocommerce_add_order_item_meta', 'bluerobotics_add_order_item_meta', 10, 2);
+
+// trigger adding of meta in admin order page
+function bluerobotics_woocommerce_ajax_add_order_item_meta( $item_id, $item ) { 
+	if (!is_admin()) { return; }
+    $product_id = $item[ 'product_id' ];
+	$product = wc_get_product( $product_id );
+
+	$variation_id = $item[ 'variation_id' ];
+	$var_sku = get_post_meta( $variation_id, '_sku', true );
+	
+	if($variation_id > 0){
+		$key = 'Revision'; 
+		$value = $var_sku; 
+	}else{
+		$key = 'Revision';
+		$value = $product->get_sku();
+	}
+    wc_add_order_item_meta($item_id, $key, $value);
+}
+add_action( 'woocommerce_ajax_add_order_item_meta', 'bluerobotics_woocommerce_ajax_add_order_item_meta', 10, 2 ); 
+
+// hide the meta data in all emails
+function bluerobotics_woocommerce_email_styles( $css ) {
+	return $css . '
+	.wc-item-meta { display: none }
+';
+}
+add_filter( 'woocommerce_email_styles', 'bluerobotics_woocommerce_email_styles', 10, 1 );
+
+// Register Custom Status
+function bluerobotics_custom_post_status() {
+
+	$args = array(
+		'label'                     => _x( 'retired', 'Retired', 'bluerobotics' ),
+		'label_count'               => _n_noop( 'Retired (%s)',  'Retired (%s)', 'bluerobotics' ), 
+		'public'                    => false,
+		'private'                    => true,
+		'show_in_admin_all_list'    => true,
+		'show_in_admin_status_list' => true,
+		'exclude_from_search'       => true,
+	);
+	register_post_status( 'Retired', $args );
+
+}
+add_action( 'init', 'bluerobotics_custom_post_status', 0 );
+
+function bluerobotics_status_add_in_quick_edit() {
+	global $post;
+	if($post->post_type != 'product'){
+		return false;
+	}
+	echo "<script>
+	jQuery(document).ready( function() {
+		jQuery( 'select[name=\"_status\"]' ).append( '<option value=\"retired\">Retired</option>' );      
+	}); 
+	</script>";
+}
+add_action('admin_footer-edit.php','bluerobotics_status_add_in_quick_edit');
+
+function bluerobotics_status_add_in_post_page() {
+	global $post;
+	if($post->post_type != 'product'){
+		return false;
+	}?>
+	<script>
+	jQuery(document).ready( function() {        
+		jQuery( 'select[name=\"post_status\"]' ).append( '<option value=\"retired\">Retired</option>' );
+	});
+
+	jQuery( '#post_status' ).change(function() {
+		jQuery( '#save-action' ).css('display','block');
+		if(jQuery( '#post_status' ).val() == 'retired'){
+			jQuery( '#save-post' ).val('Save as Retired');
+			jQuery( '#save-post' ).replaceWith('<button type="submit" name="save" id="save-post" class="button">Save as Retired</button>');
+		}else{
+			jQuery( '#save-post' ).replaceWith('<input type="submit" name="save" id="save-post" value="Save Draft" class="button">');
+		}
+	});
+
+	</script>
+
+	<?php
+
+	if ( get_post_status ( $post->ID ) == 'retired' ) {
+		echo "<script>
+		jQuery(document).ready( function() {        
+			jQuery( '#save-action' ).css('display','none');
+			jQuery( '#post-status-display' ).text('Retired');
+		});
+		</script>";
+	}
+}
+add_action('admin_footer-post.php', 'bluerobotics_status_add_in_post_page');
+add_action('admin_footer-post-new.php', 'bluerobotics_status_add_in_post_page');
+
+/* Override checkout field placeholder for order notes. */
+function custom_override_order_comments_placeholder( $fields ) {
+     $fields['order']['order_comments']['placeholder'] = 'Notes about your order, e.g. special delivery notes. (Note that we can not adjust any credit card payment amounts after the order is placed.)';
+     return $fields;
+}
+add_filter( 'woocommerce_checkout_fields' , 'custom_override_order_comments_placeholder' );

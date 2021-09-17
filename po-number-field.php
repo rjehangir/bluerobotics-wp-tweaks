@@ -43,6 +43,7 @@ function br_po_checkout_field_update_order_meta( $order_id ) {
 add_action( 'woocommerce_admin_order_data_after_billing_address', 'br_po_checkout_field_display_admin_order_meta' );	 	
 function br_po_checkout_field_display_admin_order_meta( $order ){	 	 
 	$br_po_number = get_post_meta( $order->id, '_br_po_number', true );
+	$payment_method_title = $order->get_payment_method_title();
 	?>
 	<div class="address">
 		<p<?php if( !$br_po_number ) echo ' class=""' ?>>
@@ -58,7 +59,13 @@ function br_po_checkout_field_display_admin_order_meta( $order ){
 			'value' => $br_po_number,
 			'desc_tip' => true
 		) );
-        ?></div><?php
+        ?></div>
+	<div class="address">
+		<p<?php if( !$payment_method_title ) echo ' class=""' ?>>
+			<strong>Payment Method:</strong>
+			<?php echo ($payment_method_title) ? $payment_method_title : '<span style="color:red;font-weight:bold;">NOT SET!</span>'; ?>
+		</p>
+	</div><?php
 }
 
 /**
